@@ -190,19 +190,23 @@ export function getChordIntervals(quality: ChordQuality): number[] {
   return quality === 'major' ? [0, 4, 7] : [0, 3, 7];
 }
 
+const INTERVAL_LABELS: Record<number, string> = {
+  0: 'R',
+  1: '♭2',
+  2: '2',
+  3: '♭3',
+  4: '3',
+  5: '4',
+  6: '♭5',
+  7: '5',
+  8: '♭6',
+  9: '6',
+  10: '♭7',
+  11: '7',
+};
+
 export function intervalLabel(interval: number): string {
-  switch (interval) {
-    case 0:
-      return 'R';
-    case 3:
-      return '♭3';
-    case 4:
-      return '3';
-    case 7:
-      return '5';
-    default:
-      return String(interval);
-  }
+  return INTERVAL_LABELS[((interval % 12) + 12) % 12] ?? String(interval);
 }
 
 function mod12(n: number): number {

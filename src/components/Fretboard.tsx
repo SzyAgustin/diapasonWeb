@@ -51,7 +51,8 @@ function noteX(fret: number): number {
 function intervalColor(interval: number): string {
   if (interval === 0) return '#22c55e'; // fundamental (verde success)
   if (interval === 7) return '#ef4444'; // quinta (rojo intenso)
-  return '#3b82f6'; // tercera (azul eléctrico)
+  if (interval === 3 || interval === 4) return '#3b82f6'; // tercera (azul eléctrico)
+  return '#64748b'; // resto de notas de la escala (gris pizarra)
 }
 
 export function Fretboard({ positions, labelMode, tuning }: FretboardProps) {
