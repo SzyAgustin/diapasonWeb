@@ -1,0 +1,243 @@
+.app {
+  max-width: 1880px;
+  margin: 0 auto;
+  padding: 24px clamp(12px, 2vw, 32px) 48px;
+}
+
+.app-header h1 {
+  margin: 0 0 4px;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  color: #9aa1b2;
+  font-size: 0.95rem;
+}
+
+/* ---- Controles ---- */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #1c1f29;
+  border: 1px solid #2a2e3a;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7d8499;
+  font-weight: 600;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  min-width: 40px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid #343948;
+  background: #232734;
+  color: #d6dae6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.12s ease;
+}
+
+.chip:hover {
+  border-color: #4a8cff;
+  color: #fff;
+}
+
+.chip-active {
+  background: #4a8cff;
+  border-color: #4a8cff;
+  color: #fff;
+}
+
+.chip-caged {
+  font-family: 'SFMono-Regular', ui-monospace, monospace;
+}
+
+/* ---- Switch on/off ---- */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #d6dae6;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.switch:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.switch-track {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: #343948;
+  transition: background 0.15s ease;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #d6dae6;
+  transition: transform 0.15s ease;
+}
+
+.switch-on .switch-track {
+  background: #22c55e;
+}
+
+.switch-on .switch-thumb {
+  transform: translateX(20px);
+  background: #fff;
+}
+
+/* ---- Encabezado del acorde mostrado ---- */
+.now-showing {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 22px 0 12px;
+}
+
+.chord-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.shape-info {
+  color: #9aa1b2;
+  font-size: 0.95rem;
+}
+
+/* ---- Diapasón ---- */
+.fretboard-scroll {
+  width: 100%;
+  padding-bottom: 8px;
+  border-radius: 12px;
+}
+
+.fretboard {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.board-bg {
+  fill: #3a2a1e;
+  stroke: #20140c;
+  stroke-width: 1;
+}
+
+.nut {
+  stroke: #e8eaf0;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.fret {
+  stroke: #8a8f9c;
+  stroke-width: 2;
+}
+
+/* Traste 12: quiebre de octava, "metal" bien marcado */
+.fret-octave {
+  stroke: #f4f6fb;
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(220, 230, 255, 0.65));
+}
+
+.string-line {
+  stroke: #d8c9a8;
+}
+
+.string-name {
+  fill: #c7ccd8;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.fret-number {
+  fill: #7d8499;
+  font-size: 0.72rem;
+}
+
+.inlay {
+  fill: #cdb78a;
+  opacity: 0.5;
+}
+
+.dot {
+  stroke: rgba(0, 0, 0, 0.35);
+  stroke-width: 1;
+}
+
+.dot-root {
+  stroke: rgba(0, 0, 0, 0.35);
+  stroke-width: 1;
+}
+
+.dot-label {
+  fill: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.dot-label-root {
+  font-size: 0.9rem;
+}
+
+/* ---- Leyenda ---- */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 18px;
+  color: #c7ccd8;
+  font-size: 0.88rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
