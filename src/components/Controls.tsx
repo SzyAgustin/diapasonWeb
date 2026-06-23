@@ -1,10 +1,11 @@
 import { NOTE_NAMES, type Instrument, type NoteName } from '../music/notes';
 import { CAGED_SHAPES, type CagedShape, type ChordQuality } from '../music/caged';
-import { SCALES, type ScaleType } from '../music/scales';
+import { SCALES, scaleHasFigures, type ScaleType } from '../music/scales';
 import type { LabelMode } from './Fretboard';
 
 export type ShapeSelection = CagedShape | 'all';
 export type AppMode = 'caged' | 'scale';
+export type FigureSelection = CagedShape | 'all';
 
 interface ControlsProps {
   mode: AppMode;
@@ -12,6 +13,7 @@ interface ControlsProps {
   quality: ChordQuality;
   shape: ShapeSelection;
   scale: ScaleType;
+  figure: FigureSelection;
   labelMode: LabelMode;
   showExtras: boolean;
   instrument: Instrument;
@@ -20,6 +22,7 @@ interface ControlsProps {
   onQualityChange: (quality: ChordQuality) => void;
   onShapeChange: (shape: ShapeSelection) => void;
   onScaleChange: (scale: ScaleType) => void;
+  onFigureChange: (figure: FigureSelection) => void;
   onLabelModeChange: (mode: LabelMode) => void;
   onShowExtrasChange: (value: boolean) => void;
   onInstrumentChange: (instrument: Instrument) => void;
@@ -31,6 +34,7 @@ export function Controls({
   quality,
   shape,
   scale,
+  figure,
   labelMode,
   showExtras,
   instrument,
@@ -39,6 +43,7 @@ export function Controls({
   onQualityChange,
   onShapeChange,
   onScaleChange,
+  onFigureChange,
   onLabelModeChange,
   onShowExtrasChange,
   onInstrumentChange,
@@ -161,6 +166,31 @@ export function Controls({
                 onClick={() => onScaleChange(s.id)}
               >
                 {s.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isScale && scaleHasFigures(scale) && (
+        <div className="control-group">
+          <span className="control-label">Figura (posición CAGED)</span>
+          <div className="btn-row">
+            <button
+              type="button"
+              className={`chip ${figure === 'all' ? 'chip-active' : ''}`}
+              onClick={() => onFigureChange('all')}
+            >
+              Todas
+            </button>
+            {CAGED_SHAPES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={`chip chip-caged ${figure === s ? 'chip-active' : ''}`}
+                onClick={() => onFigureChange(s)}
+              >
+                {s}
               </button>
             ))}
           </div>

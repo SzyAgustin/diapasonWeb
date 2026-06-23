@@ -260,6 +260,22 @@ export function getShapePositions(
 }
 
 /**
+ * Ventana de trastes (mínimo y máximo) que ocupa una forma CAGED en su
+ * posición principal, para usarla como ancla de las figuras de escala.
+ */
+export function getShapeWindow(
+  root: NoteName,
+  quality: ChordQuality,
+  shape: CagedShape,
+): { lo: number; hi: number } {
+  const rootClass = noteToPitchClass(root);
+  const template = SHAPE_TEMPLATES[quality][shape];
+  const delta = mod12(rootClass - template.naturalRootClass);
+  const frets = template.notes.map((n) => n.fret + delta);
+  return { lo: Math.min(...frets), hi: Math.max(...frets) };
+}
+
+/**
  * Todas las notas del acorde a lo largo de todo el mástil (mapa completo).
  */
 export function getAllChordTones(

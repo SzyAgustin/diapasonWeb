@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
 import './App.css';
-import { Controls, type AppMode, type ShapeSelection } from './components/Controls';
+import {
+  Controls,
+  type AppMode,
+  type FigureSelection,
+  type ShapeSelection,
+} from './components/Controls';
 import { Fretboard, type LabelMode } from './components/Fretboard';
 import { getTuning, type Instrument, type NoteName } from './music/notes';
 import {
@@ -9,17 +14,30 @@ import {
   getShapePositions,
   type ChordQuality,
 } from './music/caged';
-import { getScaleDef, getScaleTones, type ScaleType } from './music/scales';
+import {
+  getScaleCagedFigure,
+  getScaleDef,
+  getScaleTones,
+  scaleHasFigures,
+  type ScaleType,
+} from './music/scales';
 
 export default function App() {
   const [mode, setMode] = useState<AppMode>('caged');
   const [root, setRoot] = useState<NoteName>('A');
   const [quality, setQuality] = useState<ChordQuality>('minor');
   const [shape, setShape] = useState<ShapeSelection>('all');
-  const [scale, setScale] = useState<ScaleType>('naturalMinor');
+  const [scale, setScaleState] = useState<ScaleType>('naturalMinor');
+  const [figure, setFigure] = useState<FigureSelection>('all');
   const [labelMode, setLabelMode] = useState<LabelMode>('note');
   const [showExtras, setShowExtras] = useState(false);
   const [instrument, setInstrument] = useState<Instrument>('guitar');
+
+  // Al cambiar de escala reseteamos la figura seleccionada.
+  const setScale = (next: ScaleType) => {
+    setScaleState(next);
+    setFigure('all');
+  };
 
   const tuning = getTuning(instrument);
   const isBass = instrument === 'bass';
@@ -29,7 +47,10 @@ export default function App() {
   const positions = useMemo(() => {
     let all;
     if (mode === 'scale') {
-      all = getScaleTones(root, scale);
+      all =
+        figure !== 'all' && scaleHasFigures(scale)
+          ? getScaleCagedFigure(root, scale, figure)
+          : getScaleTones(root, scale);
     } else if (shape === 'all') {
       all = getAllChordTones(root, quality);
     } else {
@@ -37,13 +58,14 @@ export default function App() {
     }
     // El bajo solo tiene las 4 cuerdas más graves.
     return all.filter((p) => p.stringIndex < tuning.length);
-  }, [mode, root, quality, shape, scale, effectiveExtras, tuning.length]);
+  }, [mode, root, quality, shape, scale, figure, effectiveExtras, tuning.length]);
 
   const name =
     mode === 'scale' ? root : chordLabel(root, quality);
   const subtitle =
     mode === 'scale'
-      ? `Escala ${getScaleDef(scale).name.toLowerCase()}`
+      ? `Escala ${getScaleDef(scale).name.toLowerCase()}` +
+        (figure !== 'all' && scaleHasFigures(scale) ? ` · Posición ${figure}` : '')
       : shape === 'all'
         ? 'Todas las posiciones del acorde'
         : `Forma ${shape} del sistema CAGED`;
@@ -64,6 +86,7 @@ export default function App() {
         quality={quality}
         shape={shape}
         scale={scale}
+        figure={figure}
         labelMode={labelMode}
         showExtras={showExtras}
         instrument={instrument}
@@ -72,6 +95,7 @@ export default function App() {
         onQualityChange={setQuality}
         onShapeChange={setShape}
         onScaleChange={setScale}
+        onFigureChange={setFigure}
         onLabelModeChange={setLabelMode}
         onShowExtrasChange={setShowExtras}
         onInstrumentChange={setInstrument}
