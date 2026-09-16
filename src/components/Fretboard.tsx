@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type Ref, type UIEventHandler } from 'react';
 import {
   FRET_COUNT,
   pitchClassToNote,
@@ -14,6 +14,13 @@ interface FretboardProps {
   labelMode: LabelMode;
   /** Cuerdas a mostrar, de la más grave (índice 0) a la más aguda. */
   tuning: { name: NoteName; pitchClass: PitchClass }[];
+  /** Intervalos a resaltar (notas que cambian respecto de otra escala). */
+  highlightIntervals?: number[];
+  /** Notas de la otra escala que no están en ésta, dibujadas como fantasma. */
+  ghostPositions?: FretPosition[];
+  ariaLabel?: string;
+  scrollRef?: Ref<HTMLDivElement>;
+  onScroll?: UIEventHandler<HTMLDivElement>;
 }
 
 const OPEN_X = 30;
@@ -55,7 +62,16 @@ function intervalColor(interval: number): string {
   return '#64748b'; // resto de notas de la escala (gris pizarra)
 }
 
-export function Fretboard({ positions, labelMode, tuning }: FretboardProps) {
+export function Fretboard({
+  positions,
+  labelMode,
+  tuning,
+  highlightIntervals,
+  ghostPositions,
+  ariaLabel = 'Diapasón de guitarra',
+  scrollRef,
+  onScroll,
+}: FretboardProps) {
   const stringCount = tuning.length;
   // stringIndex 0 = cuerda más grave -> abajo del todo.
   const stringY = (stringIndex: number) =>
@@ -67,13 +83,19 @@ export function Fretboard({ positions, labelMode, tuning }: FretboardProps) {
   const boardBottom = stringY(0);
   const midY = (boardTop + boardBottom) / 2;
 
+  const highlight = useMemo(
+    () => new Set(highlightIntervals ?? []),
+    [highlightIntervals],
+  );
+
   const dots = useMemo(
     () =>
       positions.map((pos, i) => ({
         key: `${pos.stringIndex}-${pos.fret}-${i}`,
         cx: noteX(pos.fret),
         cy: stringY(pos.stringIndex),
-        color: intervalColor(pos.interval),
+        changed: highlight.has(pos.interval),
+        color: highlight.has(pos.interval) ? '#f59e0b' : intervalColor(pos.interval),
         label:
           labelMode === 'note'
             ? pitchClassToNote(pos.pitchClass)
@@ -81,18 +103,33 @@ export function Fretboard({ positions, labelMode, tuning }: FretboardProps) {
         isRoot: pos.isRoot,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [positions, labelMode, stringCount],
+    [positions, labelMode, stringCount, highlight],
+  );
+
+  const ghosts = useMemo(
+    () =>
+      (ghostPositions ?? []).map((pos, i) => ({
+        key: `ghost-${pos.stringIndex}-${pos.fret}-${i}`,
+        cx: noteX(pos.fret),
+        cy: stringY(pos.stringIndex),
+        label:
+          labelMode === 'note'
+            ? pitchClassToNote(pos.pitchClass)
+            : intervalLabel(pos.interval),
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ghostPositions, labelMode, stringCount],
   );
 
   return (
-    <div className="fretboard-scroll">
+    <div className="fretboard-scroll" ref={scrollRef} onScroll={onScroll}>
       <svg
         className="fretboard"
         width={width}
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label="Diapasón de guitarra"
+        aria-label={ariaLabel}
       >
         {/* Madera del diapasón */}
         <rect
@@ -169,20 +206,46 @@ export function Fretboard({ positions, labelMode, tuning }: FretboardProps) {
           );
         })}
 
-        {/* Notas del acorde */}
+        {/* Notas que desaparecen (solo en comparación) */}
+        {ghosts.map((ghost) => (
+          <g key={ghost.key}>
+            <circle
+              cx={ghost.cx}
+              cy={ghost.cy}
+              r={DOT_R}
+              className="dot-ghost"
+            />
+            <text
+              x={ghost.cx}
+              y={ghost.cy + 4}
+              className="dot-label dot-label-ghost"
+              textAnchor="middle"
+            >
+              {ghost.label}
+            </text>
+          </g>
+        ))}
+
+        {/* Notas del acorde / escala */}
         {dots.map((dot) => (
           <g key={dot.key}>
             <circle
               cx={dot.cx}
               cy={dot.cy}
-              r={dot.isRoot ? DOT_R + 5 : DOT_R}
+              r={dot.isRoot && !dot.changed ? DOT_R + 5 : DOT_R}
               fill={dot.color}
-              className={dot.isRoot ? 'dot dot-root' : 'dot'}
+              className={
+                dot.changed
+                  ? 'dot dot-changed'
+                  : dot.isRoot
+                    ? 'dot dot-root'
+                    : 'dot'
+              }
             />
             <text
               x={dot.cx}
               y={dot.cy + 4}
-              className={dot.isRoot ? 'dot-label dot-label-root' : 'dot-label'}
+              className={dot.isRoot && !dot.changed ? 'dot-label dot-label-root' : 'dot-label'}
               textAnchor="middle"
             >
               {dot.label}

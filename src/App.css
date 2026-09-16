@@ -18,13 +18,64 @@
 
 /* ---- Controles ---- */
 .controls {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "mode inst label"
+    "note note note"
+    "slotA slotA slotA"
+    "slotB slotB slotB"
+    "slotC slotC slotC";
+  gap: 16px 24px;
   background: #1c1f29;
   border: 1px solid #2a2e3a;
   border-radius: 14px;
   padding: 18px;
+}
+
+.area-mode { grid-area: mode; }
+.area-inst { grid-area: inst; }
+.area-note { grid-area: note; }
+.area-slota { grid-area: slotA; }
+.area-slotb { grid-area: slotB; }
+.area-label { grid-area: label; }
+.area-slotc { grid-area: slotC; }
+
+@media (max-width: 720px) {
+  .controls {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "mode"
+      "inst"
+      "note"
+      "slotA"
+      "slotB"
+      "label"
+      "slotC";
+  }
+}
+
+/*
+ * Los slots que cambian según el modo (tipo/escala, forma/comparar, extras/figura)
+ * se renderizan siempre, con el alto mínimo de una fila de chips. Así el diapasón
+ * no salta al elegir una escala con o sin figuras, ni al activar la comparación.
+ */
+.control-slot .btn-row-scales {
+  min-height: 40px;
+}
+
+.extras-slot {
+  align-items: center;
+}
+
+.chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chip:disabled:hover {
+  border-color: #343948;
+  color: #d6dae6;
 }
 
 .control-group {
@@ -127,6 +178,7 @@
   align-items: baseline;
   gap: 14px;
   margin: 22px 0 12px;
+  min-height: 2.2rem;
 }
 
 .chord-name {
@@ -217,6 +269,45 @@
 
 .dot-label-root {
   font-size: 0.9rem;
+}
+
+.dot-changed {
+  stroke: #fde68a;
+  stroke-width: 2;
+}
+
+.dot-ghost {
+  fill: transparent;
+  stroke: #f59e0b;
+  stroke-width: 2;
+  stroke-dasharray: 3 2.5;
+  opacity: 0.85;
+}
+
+.dot-label-ghost {
+  fill: #fbbf24;
+  font-size: 0.7rem;
+}
+
+.compare-board {
+  margin-top: 8px;
+}
+
+.scale-diff {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #2a2416;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.legend-dot-ghost {
+  background: transparent;
+  border: 2px dashed #f59e0b;
+  box-sizing: border-box;
 }
 
 /* ---- Leyenda ---- */
