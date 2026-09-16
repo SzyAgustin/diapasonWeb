@@ -18,6 +18,7 @@ import {
   getScaleCagedFigure,
   getScaleDef,
   getScaleTones,
+  relatedFormLabel,
   scaleHasFigures,
   type ScaleType,
 } from './music/scales';
@@ -96,6 +97,9 @@ export default function App() {
       : shape === 'all'
         ? 'Todas las posiciones del acorde'
         : `Forma ${shape} del sistema CAGED`;
+  const formLabel = mode === 'scale' ? relatedFormLabel(root, scale) : null;
+  const compareFormLabel =
+    comparing && compareScale ? relatedFormLabel(root, compareScale) : null;
 
   const syncScroll = (from: HTMLDivElement | null, to: HTMLDivElement | null) => {
     if (!from || !to || syncingScroll.current) return;
@@ -143,6 +147,7 @@ export default function App() {
         <div className="now-showing">
           <span className="chord-name">{name}</span>
           <span className="shape-info">{subtitle}</span>
+          {formLabel && <span className="form-info">{formLabel}</span>}
         </div>
 
         <Fretboard
@@ -164,6 +169,7 @@ export default function App() {
               <span className="shape-info">
                 Escala {getScaleDef(compareScale).name.toLowerCase()}
               </span>
+              {compareFormLabel && <span className="form-info">{compareFormLabel}</span>}
             </div>
             <p className="scale-diff">{scaleDiff.summary}</p>
             <Fretboard

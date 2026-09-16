@@ -60,6 +60,57 @@ function mod12(n: number): number {
 }
 
 /**
+ * Grado del modo dentro de la escala mayor (1 = jónico / mayor).
+ * Solo los modos diatónicos tienen relativa mayor/menor.
+ */
+const DIATONIC_MODE_DEGREE: Partial<Record<ScaleType, 1 | 2 | 3 | 4 | 5 | 6 | 7>> = {
+  major: 1,
+  dorian: 2,
+  phrygian: 3,
+  lydian: 4,
+  mixolydian: 5,
+  naturalMinor: 6,
+  locrian: 7,
+};
+
+/** Semitonos desde la tónica mayor hasta cada grado (1–7). */
+const MAJOR_DEGREE_SEMITONES = [0, 2, 4, 5, 7, 9, 11] as const;
+
+/**
+ * Relativa mayor/menor de cada clase de altura, con grafía habitual de tonalidad.
+ * Índice = pitch class de la tónica mayor.
+ */
+const RELATIVE_PAIR: { major: string; minor: string }[] = [
+  { major: 'C', minor: 'Am' },
+  { major: 'Db', minor: 'Bbm' },
+  { major: 'D', minor: 'Bm' },
+  { major: 'Eb', minor: 'Cm' },
+  { major: 'E', minor: 'C#m' },
+  { major: 'F', minor: 'Dm' },
+  { major: 'F#', minor: 'D#m' },
+  { major: 'G', minor: 'Em' },
+  { major: 'Ab', minor: 'Fm' },
+  { major: 'A', minor: 'F#m' },
+  { major: 'Bb', minor: 'Gm' },
+  { major: 'B', minor: 'G#m' },
+];
+
+/**
+ * Texto "Forma de: …" con la relativa mayor y/o menor del modo.
+ * En mayor solo se muestra la relativa menor; en menor natural, la relativa mayor.
+ */
+export function relatedFormLabel(root: NoteName, scale: ScaleType): string | null {
+  const degree = DIATONIC_MODE_DEGREE[scale];
+  if (!degree) return null;
+
+  const majorPc = mod12(noteToPitchClass(root) - MAJOR_DEGREE_SEMITONES[degree - 1]);
+  const pair = RELATIVE_PAIR[majorPc];
+  if (scale === 'major') return `Forma de: ${pair.minor}`;
+  if (scale === 'naturalMinor') return `Forma de: ${pair.major}`;
+  return `Forma de: ${pair.minor} y ${pair.major}`;
+}
+
+/**
  * Acorde (mayor/menor) sobre el que se apoyan las figuras CAGED de cada escala.
  * Las escalas sin entrada no se dividen en figuras.
  */

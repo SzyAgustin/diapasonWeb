@@ -192,6 +192,12 @@
   font-size: 0.95rem;
 }
 
+.form-info {
+  color: #d6dae6;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 /* ---- Diapasón ---- */
 .fretboard-scroll {
   width: 100%;
