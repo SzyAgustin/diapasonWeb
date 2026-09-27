@@ -14,6 +14,11 @@ interface FretboardProps {
   labelMode: LabelMode;
   /** Cuerdas a mostrar, de la más grave (índice 0) a la más aguda. */
   tuning: { name: NoteName; pitchClass: PitchClass }[];
+  /**
+   * Cómo escribir cada clase de altura en modo Nota.
+   * Si no se pasa, se usa el nombre con sostenido (C, C#, D…).
+   */
+  noteLabel?: (pitchClass: PitchClass) => string;
   /** Intervalos a resaltar (notas que cambian respecto de otra escala). */
   highlightIntervals?: number[];
   /** Notas de la otra escala que no están en ésta, dibujadas como fantasma. */
@@ -66,6 +71,7 @@ export function Fretboard({
   positions,
   labelMode,
   tuning,
+  noteLabel,
   highlightIntervals,
   ghostPositions,
   ariaLabel = 'Diapasón de guitarra',
@@ -98,12 +104,12 @@ export function Fretboard({
         color: highlight.has(pos.interval) ? '#f59e0b' : intervalColor(pos.interval),
         label:
           labelMode === 'note'
-            ? pitchClassToNote(pos.pitchClass)
+            ? (noteLabel ?? pitchClassToNote)(pos.pitchClass)
             : intervalLabel(pos.interval),
         isRoot: pos.isRoot,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [positions, labelMode, stringCount, highlight],
+    [positions, labelMode, stringCount, highlight, noteLabel],
   );
 
   const ghosts = useMemo(
@@ -114,11 +120,11 @@ export function Fretboard({
         cy: stringY(pos.stringIndex),
         label:
           labelMode === 'note'
-            ? pitchClassToNote(pos.pitchClass)
+            ? (noteLabel ?? pitchClassToNote)(pos.pitchClass)
             : intervalLabel(pos.interval),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ghostPositions, labelMode, stringCount],
+    [ghostPositions, labelMode, stringCount, noteLabel],
   );
 
   return (

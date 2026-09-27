@@ -7,7 +7,8 @@ import {
   type ShapeSelection,
 } from './components/Controls';
 import { Fretboard, type LabelMode } from './components/Fretboard';
-import { getTuning, type Instrument, type NoteName } from './music/notes';
+import { TriadAtlas } from './components/TriadAtlas';
+import { getTuning, pitchClassToNote, type Instrument, type NoteName, type PitchClass } from './music/notes';
 import {
   chordLabel,
   getAllChordTones,
@@ -23,6 +24,7 @@ import {
   type ScaleType,
 } from './music/scales';
 import { diffScales } from './music/scaleDiff';
+import { getTriad } from './music/triads';
 
 export default function App() {
   const [mode, setMode] = useState<AppMode>('caged');
@@ -63,7 +65,7 @@ export default function App() {
         !comparing && figure !== 'all' && scaleHasFigures(scale)
           ? getScaleCagedFigure(root, scale, figure)
           : getScaleTones(root, scale);
-    } else if (shape === 'all') {
+    } else if (mode === 'chords' || shape === 'all') {
       all = getAllChordTones(root, quality);
     } else {
       all = getShapePositions(root, quality, shape, effectiveExtras);
@@ -87,17 +89,28 @@ export default function App() {
     return positions.filter((p) => ghosts.has(p.interval));
   }, [scaleDiff, positions]);
 
-  const name = mode === 'scale' ? root : chordLabel(root, quality);
+  const triad = getTriad(root, quality);
+  const chordNoteLabel = useMemo(() => {
+    if (mode !== 'chords') return undefined;
+    const byPc = new Map(triad.notes.map((note) => [note.pitchClass, note.name]));
+    return (pc: PitchClass) => byPc.get(pc) ?? pitchClassToNote(pc);
+  }, [mode, triad]);
+
+  const name =
+    mode === 'scale' ? root : mode === 'chords' ? triad.label : chordLabel(root, quality);
   const subtitle =
-    mode === 'scale'
-      ? `Escala ${getScaleDef(scale).name.toLowerCase()}` +
-        (!comparing && figure !== 'all' && scaleHasFigures(scale)
-          ? ` · Posición ${figure}`
-          : '')
-      : shape === 'all'
-        ? 'Todas las posiciones del acorde'
-        : `Forma ${shape} del sistema CAGED`;
-  const formLabel = mode === 'scale' ? relatedFormLabel(root, scale) : null;
+    mode === 'chords'
+      ? `${triad.quality === 'major' ? 'Mayor' : 'Menor'} · ${triad.notes.map((note) => note.name).join(' · ')}`
+      : mode === 'scale'
+        ? `Escala ${getScaleDef(scale).name.toLowerCase()}` +
+          (!comparing && figure !== 'all' && scaleHasFigures(scale)
+            ? ` · Posición ${figure}`
+            : '')
+        : shape === 'all'
+          ? 'Todas las posiciones del acorde'
+          : `Forma ${shape} del sistema CAGED`;
+  const formLabel =
+    mode === 'chords' ? triad.signatureDetail : mode === 'scale' ? relatedFormLabel(root, scale) : null;
   const compareFormLabel =
     comparing && compareScale ? relatedFormLabel(root, compareScale) : null;
 
@@ -115,8 +128,9 @@ export default function App() {
       <header className="app-header">
         <h1>Diapasón CAGED</h1>
         <p className="subtitle">
-          Visualizá formas CAGED de acordes y escalas sobre el mástil de
-          guitarra o bajo.
+          {mode === 'chords'
+            ? 'Las triadas mayores y menores, escritas con la armadura de cada tonalidad.'
+            : 'Visualizá formas CAGED de acordes y escalas sobre el mástil de guitarra o bajo.'}
         </p>
       </header>
 
@@ -143,6 +157,17 @@ export default function App() {
         onInstrumentChange={setInstrument}
       />
 
+      {mode === 'chords' && (
+        <TriadAtlas
+          root={root}
+          quality={quality}
+          onSelect={(nextRoot, nextQuality) => {
+            setRoot(nextRoot);
+            setQuality(nextQuality);
+          }}
+        />
+      )}
+
       <div className="board-stage">
         <div className="now-showing">
           <span className="chord-name">{name}</span>
@@ -153,7 +178,9 @@ export default function App() {
         <Fretboard
           positions={positions}
           labelMode={labelMode}
+          noteLabel={chordNoteLabel}
           tuning={tuning}
+          ariaLabel={mode === 'chords' ? `Diapasón del acorde ${triad.label}` : undefined}
           scrollRef={topScrollRef}
           onScroll={
             comparing

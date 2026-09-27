@@ -4,7 +4,7 @@ import { SCALES, scaleHasFigures, type ScaleType } from '../music/scales';
 import type { LabelMode } from './Fretboard';
 
 export type ShapeSelection = CagedShape | 'all';
-export type AppMode = 'caged' | 'scale';
+export type AppMode = 'caged' | 'scale' | 'chords';
 export type FigureSelection = CagedShape | 'all';
 
 interface ControlsProps {
@@ -53,9 +53,10 @@ export function Controls({
   onInstrumentChange,
 }: ControlsProps) {
   const isScale = mode === 'scale';
+  const isChords = mode === 'chords';
   const comparing = isScale && compareScale !== null;
   const figuresEnabled = isScale && scaleHasFigures(scale) && !comparing;
-  const extrasEnabled = !isScale && instrument !== 'bass' && shape !== 'all';
+  const extrasEnabled = !isScale && !isChords && instrument !== 'bass' && shape !== 'all';
 
   return (
     <div className="controls">
@@ -75,6 +76,13 @@ export function Controls({
             onClick={() => onModeChange('scale')}
           >
             Escala
+          </button>
+          <button
+            type="button"
+            className={`chip ${mode === 'chords' ? 'chip-active' : ''}`}
+            onClick={() => onModeChange('chords')}
+          >
+            Acordes
           </button>
         </div>
       </div>
@@ -99,6 +107,7 @@ export function Controls({
         </div>
       </div>
 
+      {!isChords && (
       <div className="control-group area-note">
         <span className="control-label">Nota</span>
         <div className="btn-row">
@@ -114,8 +123,10 @@ export function Controls({
           ))}
         </div>
       </div>
+      )}
 
-      {/* Slot A: Tipo (CAGED) / Escala (modo escala). Siempre presente. */}
+      {/* Slot A: Tipo (CAGED) / Escala (modo escala). Oculto en el catálogo de acordes. */}
+      {!isChords && (
       <div className="control-group control-slot area-slota">
         {isScale ? (
           <>
@@ -155,8 +166,10 @@ export function Controls({
           </>
         )}
       </div>
+      )}
 
-      {/* Slot B: Forma CAGED / Comparar con. Siempre presente. */}
+      {/* Slot B: Forma CAGED / Comparar con. Oculto en el catálogo de acordes. */}
+      {!isChords && (
       <div className="control-group control-slot area-slotb">
         {isScale ? (
           <>
@@ -208,6 +221,7 @@ export function Controls({
           </>
         )}
       </div>
+      )}
 
       <div className="control-group area-label">
         <span className="control-label">Etiqueta</span>
@@ -229,7 +243,8 @@ export function Controls({
         </div>
       </div>
 
-      {/* Slot C: Notas extra (CAGED) / Figura (escala). Siempre presente. */}
+      {/* Slot C: Notas extra (CAGED) / Figura (escala). Oculto en el catálogo de acordes. */}
+      {!isChords && (
       <div className="control-group control-slot area-slotc">
         {isScale ? (
           <>
@@ -298,6 +313,7 @@ export function Controls({
           </>
         )}
       </div>
+      )}
     </div>
   );
 }
