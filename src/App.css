@@ -349,10 +349,17 @@
 }
 
 .triad-intro {
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   max-width: 68rem;
   color: #9aa1b2;
   font-size: 0.92rem;
+}
+
+.triad-play {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
 }
 
 .triad-columns {
@@ -376,16 +383,20 @@
   display: grid;
   grid-template-columns: 4.75rem minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
-  align-items: center;
 }
 
 .triad-head {
+  align-items: center;
   margin-bottom: 4px;
   color: #7d8499;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.triad-row {
+  align-items: stretch;
 }
 
 .deg {
@@ -418,6 +429,7 @@
 }
 
 .triad-sig {
+  align-self: center;
   font-size: 0.95rem;
   font-weight: 700;
   text-align: center;
@@ -432,6 +444,7 @@
   align-items: center;
   gap: 10px;
   width: 100%;
+  height: 100%;
   padding: 7px 10px;
   border-radius: 10px;
   border: 1px solid #343948;
@@ -457,10 +470,24 @@
   font-weight: 700;
 }
 
+.triad-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
 .triad-tones {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.triad-spanish {
+  color: #d6dae6;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.25;
 }
 
 .tone {

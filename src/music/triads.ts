@@ -166,6 +166,34 @@ export function getTriad(root: NoteName, quality: ChordQuality): Triad {
   return triad;
 }
 
+const NOTE_IN_SPANISH: Record<string, string> = {
+  C: 'do',
+  D: 're',
+  E: 'mi',
+  F: 'fa',
+  G: 'sol',
+  A: 'la',
+  B: 'si',
+};
+
+/** "F#" → "fa sostenido", "Bb" → "si bemol", "C" → "do". */
+export function noteNameInSpanish(name: string): string {
+  const base = NOTE_IN_SPANISH[name[0] ?? ''] ?? name.toLowerCase();
+  if (name.endsWith('#')) return `${base} sostenido`;
+  if (name.endsWith('b')) return `${base} bemol`;
+  return base;
+}
+
+/** Texto de la ficha: "do, mi, sol". */
+export function triadNotesInSpanish(triad: Triad): string {
+  return triad.notes.map((note) => noteNameInSpanish(note.name)).join(', ');
+}
+
+/** Texto para decir en voz, sin comas entre notas: "do mi sol". */
+export function triadNotesSpoken(triad: Triad): string {
+  return triad.notes.map((note) => noteNameInSpanish(note.name)).join(' ');
+}
+
 /** Nombre de una nota del acorde según la armadura. Si no es del acorde, cae al nombre con sostenido. */
 export function spellTriadTone(
   root: NoteName,
