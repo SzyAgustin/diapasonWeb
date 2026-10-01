@@ -339,6 +339,58 @@
   display: inline-block;
 }
 
+/* ---- Práctica de triadas ---- */
+.practice {
+  margin-top: 16px;
+  background: #1c1f29;
+  border: 1px solid #2a2e3a;
+  border-radius: 14px;
+  padding: 16px 18px 18px;
+}
+
+.practice-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.practice-count {
+  color: #7d8499;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.practice-name {
+  margin: 8px 0 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+}
+
+.practice-symbol {
+  margin: 2px 0 0;
+  color: #9aa1b2;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.practice-help {
+  margin: 8px 0 0;
+  max-width: 40rem;
+  color: #9aa1b2;
+  font-size: 0.92rem;
+}
+
+.practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+}
+
 /* ---- Catálogo de triadas ---- */
 .triad-atlas {
   margin-top: 16px;

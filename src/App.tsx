@@ -8,6 +8,7 @@ import {
 } from './components/Controls';
 import { Fretboard, type LabelMode } from './components/Fretboard';
 import { TriadAtlas } from './components/TriadAtlas';
+import { TriadPractice } from './practice/TriadPractice';
 import { getTuning, pitchClassToNote, type Instrument, type NoteName, type PitchClass } from './music/notes';
 import {
   chordLabel,
@@ -158,14 +159,17 @@ export default function App() {
       />
 
       {mode === 'chords' && (
-        <TriadAtlas
-          root={root}
-          quality={quality}
-          onSelect={(nextRoot, nextQuality) => {
-            setRoot(nextRoot);
-            setQuality(nextQuality);
-          }}
-        />
+        <>
+          <TriadPractice />
+          <TriadAtlas
+            root={root}
+            quality={quality}
+            onSelect={(nextRoot, nextQuality) => {
+              setRoot(nextRoot);
+              setQuality(nextQuality);
+            }}
+          />
+        </>
       )}
 
       <div className="board-stage">
