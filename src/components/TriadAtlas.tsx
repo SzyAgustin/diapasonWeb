@@ -59,8 +59,8 @@ function TriadCard({
 
 const NATURAL = TRIAD_ROWS.filter((row) => row.accidentals === 0);
 const SHARPS = TRIAD_ROWS.filter((row) => row.accidentals > 0);
-/** De más bemoles a menos: 5♭, 4♭, 3♭, 2♭, 1♭. */
-const FLATS = TRIAD_ROWS.filter((row) => row.accidentals < 0).reverse();
+/** De menos bemoles a más: 1♭, 2♭, 3♭, 4♭, 5♭. */
+const FLATS = TRIAD_ROWS.filter((row) => row.accidentals < 0);
 const STUDY_ROWS = [...NATURAL, ...SHARPS, ...FLATS];
 
 function TriadHead() {
