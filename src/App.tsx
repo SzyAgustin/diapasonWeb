@@ -38,6 +38,7 @@ export default function App() {
   const [labelMode, setLabelMode] = useState<LabelMode>('note');
   const [showExtras, setShowExtras] = useState(false);
   const [instrument, setInstrument] = useState<Instrument>('guitar');
+  const [answerLabel, setAnswerLabel] = useState<string | null>(null);
 
   const topScrollRef = useRef<HTMLDivElement>(null);
   const bottomScrollRef = useRef<HTMLDivElement>(null);
@@ -160,10 +161,11 @@ export default function App() {
 
       {mode === 'chords' && (
         <>
-          <TriadPractice />
+          <TriadPractice onShowAnswer={setAnswerLabel} />
           <TriadAtlas
             root={root}
             quality={quality}
+            answerLabel={answerLabel}
             onSelect={(nextRoot, nextQuality) => {
               setRoot(nextRoot);
               setQuality(nextQuality);

@@ -7,6 +7,7 @@ import { TRIAD_ROWS, triadNotesInSpanish, triadNotesSpoken, type Triad } from '.
 interface TriadAtlasProps {
   root: NoteName;
   quality: ChordQuality;
+  answerLabel: string | null;
   onSelect: (root: NoteName, quality: ChordQuality) => void;
 }
 
@@ -25,17 +26,20 @@ function toneTitle(triad: Triad, degree: Triad['notes'][number]['degree']): stri
 function TriadCard({
   triad,
   selected,
+  answer,
   onSelect,
 }: {
   triad: Triad;
   selected: boolean;
+  answer: boolean;
   onSelect: (root: NoteName, quality: ChordQuality) => void;
 }) {
   return (
     <button
       type="button"
-      className={`triad-card ${selected ? 'triad-card-active' : ''}`}
+      className={`triad-card${selected ? ' triad-card-active' : ''}${answer ? ' triad-card-answer' : ''}`}
       aria-pressed={selected}
+      aria-current={answer ? 'true' : undefined}
       onClick={() => onSelect(pitchClassToNote(triad.rootPc), triad.quality)}
     >
       <span className="triad-name">{triad.label}</span>
@@ -80,12 +84,14 @@ function TriadRows({
   heading,
   selectedPc,
   quality,
+  answerLabel,
   onSelect,
 }: {
   rows: typeof TRIAD_ROWS;
   heading: string;
   selectedPc: number;
   quality: ChordQuality;
+  answerLabel: string | null;
   onSelect: (root: NoteName, quality: ChordQuality) => void;
 }) {
   return (
@@ -116,11 +122,13 @@ function TriadRows({
               <TriadCard
                 triad={row.major}
                 selected={selectedPc === row.major.rootPc && quality === 'major'}
+                answer={answerLabel === row.major.label}
                 onSelect={onSelect}
               />
               <TriadCard
                 triad={row.minor}
                 selected={selectedPc === row.minor.rootPc && quality === 'minor'}
+                answer={answerLabel === row.minor.label}
                 onSelect={onSelect}
               />
             </div>
@@ -131,7 +139,7 @@ function TriadRows({
   );
 }
 
-export function TriadAtlas({ root, quality, onSelect }: TriadAtlasProps) {
+export function TriadAtlas({ root, quality, answerLabel, onSelect }: TriadAtlasProps) {
   const selectedPc = noteToPitchClass(root);
   const [playing, setPlaying] = useState<ChordQuality | null>(null);
 
@@ -192,6 +200,7 @@ export function TriadAtlas({ root, quality, onSelect }: TriadAtlasProps) {
           heading="Sin alteraciones"
           selectedPc={selectedPc}
           quality={quality}
+          answerLabel={answerLabel}
           onSelect={onSelect}
         />
       </div>
@@ -201,6 +210,7 @@ export function TriadAtlas({ root, quality, onSelect }: TriadAtlasProps) {
           heading="Sostenidos"
           selectedPc={selectedPc}
           quality={quality}
+          answerLabel={answerLabel}
           onSelect={onSelect}
         />
         <TriadRows
@@ -208,6 +218,7 @@ export function TriadAtlas({ root, quality, onSelect }: TriadAtlasProps) {
           heading="Bemoles"
           selectedPc={selectedPc}
           quality={quality}
+          answerLabel={answerLabel}
           onSelect={onSelect}
         />
       </div>

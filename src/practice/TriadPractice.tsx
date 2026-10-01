@@ -8,12 +8,17 @@ function promptName(triad: Triad): string {
   return triad.quality === 'major' ? `${titled} mayor` : `${titled} menor`;
 }
 
-export function TriadPractice() {
+interface TriadPracticeProps {
+  onShowAnswer: (label: string | null) => void;
+}
+
+export function TriadPractice({ onShowAnswer }: TriadPracticeProps) {
   const [order, setOrder] = useState<Triad[]>(() => shuffleTriads(allPracticeTriads()));
   const [index, setIndex] = useState(0);
   const triad = order[index];
 
   const goNext = () => {
+    onShowAnswer(null);
     if (index + 1 < order.length) {
       setIndex(index + 1);
       return;
@@ -36,6 +41,9 @@ export function TriadPractice() {
         Decí la fundamental, la tercera y la quinta. Cuando la tengas, pasá a la siguiente.
       </p>
       <div className="practice-actions">
+        <button type="button" className="chip" onClick={() => onShowAnswer(triad.label)}>
+          Ver respuesta
+        </button>
         <button type="button" className="chip" onClick={goNext}>
           Siguiente
         </button>
