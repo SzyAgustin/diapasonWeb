@@ -8,6 +8,7 @@ import {
 } from './components/Controls';
 import { Fretboard, type LabelMode } from './components/Fretboard';
 import { TriadAtlas } from './components/TriadAtlas';
+import { SignatureStrips } from './practice/SignatureStrips';
 import { TriadPractice } from './practice/TriadPractice';
 import { getTuning, pitchClassToNote, type Instrument, type NoteName, type PitchClass } from './music/notes';
 import {
@@ -161,6 +162,7 @@ export default function App() {
 
       {mode === 'chords' && (
         <>
+          <SignatureStrips />
           <TriadPractice onShowAnswer={setAnswerLabel} />
           <TriadAtlas
             root={root}

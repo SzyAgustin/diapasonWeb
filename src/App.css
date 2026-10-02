@@ -339,6 +339,117 @@
   display: inline-block;
 }
 
+/* ---- Tiras de armadura ---- */
+.signature-strips {
+  display: grid;
+  grid-template-columns: 12.5rem max-content 40px minmax(0, 1fr);
+  margin-top: 16px;
+  background: #1c1f29;
+  border: 1px solid #2a2e3a;
+  border-radius: 14px;
+  padding: 16px 18px 8px;
+}
+
+.strips-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  grid-column: 1 / -1;
+  padding-bottom: 10px;
+}
+
+.strip-row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid #2a2e3a;
+  font-weight: 600;
+}
+
+.strip-keys {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0;
+  padding-left: 16px;
+}
+
+.strip-keys .strip-note {
+  flex: 0 0 3.5rem;
+  width: 3.5rem;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.strip-scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  grid-column: 4;
+}
+
+button.strip-note {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+}
+
+.strip-note-selected {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.strip-index {
+  margin-right: 5px;
+  color: #7d8499;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.strip-sharp .strip-acc {
+  color: #fde68a;
+}
+
+.strip-flat .strip-acc {
+  color: #dbeafe;
+}
+
+.strip-sharp {
+  color: #fbbf24;
+}
+
+.strip-flat {
+  color: #93c5fd;
+}
+
+@media (max-width: 680px) {
+  .signature-strips {
+    display: block;
+  }
+
+  .strip-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .strip-keys {
+    padding-left: 0;
+  }
+
+  .strip-scale {
+    grid-column: auto;
+  }
+}
+
 /* ---- Práctica de triadas ---- */
 .practice {
   margin-top: 16px;

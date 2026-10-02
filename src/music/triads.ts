@@ -41,8 +41,16 @@ const LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
 /** Clase de altura de cada letra sin alteración. */
 const NATURAL_PC = [0, 2, 4, 5, 7, 9, 11] as const;
 
-const SHARPS = ['F#', 'C#', 'G#', 'D#', 'A#', 'E#', 'B#'] as const;
-const FLATS = ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb'] as const;
+/**
+ * Orden en que se agregan los sostenidos en las tonalidades del catálogo.
+ * El séptimo, B#, queda afuera: solo aparece en Do# mayor, que no usamos.
+ */
+export const SHARP_ORDER = ['F#', 'C#', 'G#', 'D#', 'A#', 'E#'] as const;
+/**
+ * Orden en que se agregan los bemoles en las tonalidades del catálogo.
+ * Llega hasta Solb. Dob y Fab quedan afuera: solo aparecen en tonalidades que no usamos.
+ */
+export const FLAT_ORDER = ['Bb', 'Eb', 'Ab', 'Db', 'Gb'] as const;
 
 interface TonicSpec {
   /** Índice de letra (C=0 … B=6). La tercera y la quinta avanzan por letras, no por semitonos. */
@@ -68,8 +76,8 @@ function spelledName(letterIndex: number, pc: PitchClass): string {
 }
 
 function signatureNotes(accidentals: number): string[] {
-  if (accidentals > 0) return SHARPS.slice(0, accidentals);
-  if (accidentals < 0) return FLATS.slice(0, -accidentals);
+  if (accidentals > 0) return SHARP_ORDER.slice(0, accidentals);
+  if (accidentals < 0) return FLAT_ORDER.slice(0, -accidentals);
   return [];
 }
 
@@ -141,6 +149,19 @@ const ROW_SPECS: { accidentals: number; major: TonicSpec; minor: TonicSpec }[] =
   { accidentals: -4, major: { letter: 5, pc: 8 }, minor: { letter: 3, pc: 5 } },
   { accidentals: -5, major: { letter: 1, pc: 1 }, minor: { letter: 6, pc: 10 } },
 ];
+
+const MAJOR_SCALE_STEPS = [0, 2, 4, 5, 7, 9, 11] as const;
+
+/** Las siete notas de la escala mayor, escritas con la armadura de esa tónica. */
+export function majorScaleNames(rootName: string): string[] {
+  const row = TRIAD_ROWS.find((item) => item.major.notes[0].name === rootName);
+  if (!row) return [];
+  const root = row.major.notes[0];
+  const letter = LETTERS.indexOf(root.name[0] as (typeof LETTERS)[number]);
+  return MAJOR_SCALE_STEPS.map((step, degree) =>
+    spelledName(letter + degree, ((root.pitchClass + step) % 12) as PitchClass),
+  );
+}
 
 export const TRIAD_ROWS: TriadRow[] = ROW_SPECS.map((row) => ({
   accidentals: row.accidentals,
