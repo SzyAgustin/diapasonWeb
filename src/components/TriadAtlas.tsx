@@ -63,17 +63,14 @@ const SHARPS = TRIAD_ROWS.filter((row) => row.accidentals > 0);
 const FLATS = TRIAD_ROWS.filter((row) => row.accidentals < 0);
 const STUDY_ROWS = [...NATURAL, ...SHARPS, ...FLATS];
 
-function TriadHead() {
+function TriadHead({ quality }: { quality: ChordQuality }) {
+  const minor = quality === 'minor';
   return (
     <div className="triad-head">
       <span>Armadura</span>
       <span>
-        Mayor <span className="deg deg-1">1</span> <span className="deg deg-3">3</span>{' '}
-        <span className="deg deg-5">5</span>
-      </span>
-      <span>
-        Menor <span className="deg deg-1">1</span> <span className="deg deg-3">♭3</span>{' '}
-        <span className="deg deg-5">5</span>
+        {minor ? 'Menor' : 'Mayor'} <span className="deg deg-1">1</span>{' '}
+        <span className="deg deg-3">{minor ? '♭3' : '3'}</span> <span className="deg deg-5">5</span>
       </span>
     </div>
   );
@@ -97,6 +94,7 @@ function TriadRows({
   return (
     <div className="triad-column">
       {rows.map((row, index) => {
+        const triad = quality === 'major' ? row.major : row.minor;
         const sigTitle =
           row.signatureNotes.length === 0
             ? 'Sin alteraciones'
@@ -120,15 +118,9 @@ function TriadRows({
                 {row.signature}
               </div>
               <TriadCard
-                triad={row.major}
-                selected={selectedPc === row.major.rootPc && quality === 'major'}
-                answer={answerLabel === row.major.label}
-                onSelect={onSelect}
-              />
-              <TriadCard
-                triad={row.minor}
-                selected={selectedPc === row.minor.rootPc && quality === 'minor'}
-                answer={answerLabel === row.minor.label}
+                triad={triad}
+                selected={selectedPc === triad.rootPc}
+                answer={answerLabel === triad.label}
                 onSelect={onSelect}
               />
             </div>
@@ -154,6 +146,11 @@ export function TriadAtlas({ root, quality, answerLabel, onSelect }: TriadAtlasP
     };
   }, []);
 
+  useEffect(() => {
+    stopSpeaking();
+    setPlaying(null);
+  }, [quality]);
+
   const togglePlay = (next: ChordQuality) => {
     if (playing === next) {
       stopSpeaking();
@@ -168,33 +165,29 @@ export function TriadAtlas({ root, quality, answerLabel, onSelect }: TriadAtlasP
   };
 
   return (
-    <section className="triad-atlas" aria-label="Triadas mayores y menores">
+    <section className="triad-atlas" aria-label={quality === 'major' ? 'Triadas mayores' : 'Triadas menores'}>
       <p className="triad-intro">
-        Cada fila es una tonalidad: el acorde mayor y su relativo menor comparten armadura.
-        Las tres notas son la fundamental, la tercera y la quinta, escritas con sostenido o
-        bemol según esa armadura. Tocá uno para verlo en el diapasón.
+        {quality === 'major'
+          ? 'Cada fila es una tonalidad mayor y su armadura. Tocá un acorde para verlo en el diapasón.'
+          : 'Cada fila es una tonalidad menor, con la misma armadura que su relativo mayor. Tocá un acorde para verlo en el diapasón.'}
       </p>
       <div className="triad-play">
         <button
           type="button"
-          className={`chip ${playing === 'major' ? 'chip-active' : ''}`}
-          aria-pressed={playing === 'major'}
-          onClick={() => togglePlay('major')}
+          className={`chip ${playing === quality ? 'chip-active' : ''}`}
+          aria-pressed={playing === quality}
+          onClick={() => togglePlay(quality)}
         >
-          {playing === 'major' ? 'Detener mayores' : 'Escuchar mayores'}
-        </button>
-        <button
-          type="button"
-          className={`chip ${playing === 'minor' ? 'chip-active' : ''}`}
-          aria-pressed={playing === 'minor'}
-          onClick={() => togglePlay('minor')}
-        >
-          {playing === 'minor' ? 'Detener menores' : 'Escuchar menores'}
+          {playing === quality
+            ? 'Detener'
+            : quality === 'major'
+              ? 'Escuchar mayores'
+              : 'Escuchar menores'}
         </button>
       </div>
 
       <div className="triad-natural">
-        <TriadHead />
+        <TriadHead quality={quality} />
         <TriadRows
           rows={NATURAL}
           heading="Sin alteraciones"

@@ -1,8 +1,9 @@
+import type { ChordQuality } from '../music/caged';
 import { TRIAD_ROWS, type Triad } from '../music/triads';
 
-/** Las 24 triadas mayores y menores, en el orden del catálogo. */
-export function allPracticeTriads(): Triad[] {
-  return TRIAD_ROWS.flatMap((row) => [row.major, row.minor]);
+/** Las 12 triadas de una calidad, en el orden del catálogo. */
+export function practiceTriads(quality: ChordQuality): Triad[] {
+  return TRIAD_ROWS.map((row) => (quality === 'major' ? row.major : row.minor));
 }
 
 export function shuffleTriads(triads: Triad[]): Triad[] {
@@ -15,8 +16,8 @@ export function shuffleTriads(triads: Triad[]): Triad[] {
 }
 
 /** Otro mazo, sin repetir de entrada el acorde que acaba de salir. */
-export function reshuffleAvoiding(previous: Triad): Triad[] {
-  const next = shuffleTriads(allPracticeTriads());
+export function reshuffleAvoiding(previous: Triad, quality: ChordQuality): Triad[] {
+  const next = shuffleTriads(practiceTriads(quality));
   if (next.length > 1 && next[0].label === previous.label) {
     [next[0], next[1]] = [next[1], next[0]];
   }

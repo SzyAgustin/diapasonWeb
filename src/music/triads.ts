@@ -151,16 +151,31 @@ const ROW_SPECS: { accidentals: number; major: TonicSpec; minor: TonicSpec }[] =
 ];
 
 const MAJOR_SCALE_STEPS = [0, 2, 4, 5, 7, 9, 11] as const;
+/** Escala menor natural: misma armadura que el relativo mayor. */
+const MINOR_SCALE_STEPS = [0, 2, 3, 5, 7, 8, 10] as const;
+
+function scaleNames(
+  root: { name: string; pitchClass: PitchClass },
+  steps: readonly number[],
+): string[] {
+  const letter = LETTERS.indexOf(root.name[0] as (typeof LETTERS)[number]);
+  return steps.map((step, degree) =>
+    spelledName(letter + degree, ((root.pitchClass + step) % 12) as PitchClass),
+  );
+}
 
 /** Las siete notas de la escala mayor, escritas con la armadura de esa tónica. */
 export function majorScaleNames(rootName: string): string[] {
   const row = TRIAD_ROWS.find((item) => item.major.notes[0].name === rootName);
   if (!row) return [];
-  const root = row.major.notes[0];
-  const letter = LETTERS.indexOf(root.name[0] as (typeof LETTERS)[number]);
-  return MAJOR_SCALE_STEPS.map((step, degree) =>
-    spelledName(letter + degree, ((root.pitchClass + step) % 12) as PitchClass),
-  );
+  return scaleNames(row.major.notes[0], MAJOR_SCALE_STEPS);
+}
+
+/** Las siete notas de la escala menor natural, con la armadura del relativo mayor. */
+export function naturalMinorScaleNames(rootName: string): string[] {
+  const row = TRIAD_ROWS.find((item) => item.minor.notes[0].name === rootName);
+  if (!row) return [];
+  return scaleNames(row.minor.notes[0], MINOR_SCALE_STEPS);
 }
 
 export const TRIAD_ROWS: TriadRow[] = ROW_SPECS.map((row) => ({
@@ -185,6 +200,14 @@ export function getTriad(root: NoteName, quality: ChordQuality): Triad {
     throw new Error(`No hay triada ${quality} para ${root}`);
   }
   return triad;
+}
+
+/** El otro acorde de la misma armadura: Do mayor ↔ La menor, Sol mayor ↔ Mi menor. */
+export function relativeTriad(root: NoteName, quality: ChordQuality): Triad {
+  const triad = getTriad(root, quality);
+  const row = TRIAD_ROWS.find((item) => item.major === triad || item.minor === triad);
+  if (!row) return triad;
+  return quality === 'major' ? row.minor : row.major;
 }
 
 const NOTE_IN_SPANISH: Record<string, string> = {

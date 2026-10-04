@@ -26,7 +26,7 @@ import {
   type ScaleType,
 } from './music/scales';
 import { diffScales } from './music/scaleDiff';
-import { getTriad } from './music/triads';
+import { getTriad, relativeTriad } from './music/triads';
 
 export default function App() {
   const [mode, setMode] = useState<AppMode>('caged');
@@ -150,7 +150,14 @@ export default function App() {
         instrument={instrument}
         onModeChange={setMode}
         onRootChange={setRoot}
-        onQualityChange={setQuality}
+        onQualityChange={(next) => {
+          if (mode === 'chords' && next !== quality) {
+            const other = relativeTriad(root, quality);
+            setRoot(pitchClassToNote(other.rootPc));
+            setAnswerLabel(null);
+          }
+          setQuality(next);
+        }}
         onShapeChange={setShape}
         onScaleChange={setScale}
         onCompareScaleChange={setCompareScale}
@@ -162,8 +169,8 @@ export default function App() {
 
       {mode === 'chords' && (
         <>
-          <SignatureStrips />
-          <TriadPractice onShowAnswer={setAnswerLabel} />
+          <SignatureStrips quality={quality} />
+          <TriadPractice key={quality} quality={quality} onShowAnswer={setAnswerLabel} />
           <TriadAtlas
             root={root}
             quality={quality}

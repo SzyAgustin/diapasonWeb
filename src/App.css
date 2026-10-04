@@ -544,7 +544,7 @@ button.strip-note {
 .triad-head,
 .triad-row {
   display: grid;
-  grid-template-columns: 4.75rem minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 4.75rem minmax(0, 1fr);
   gap: 8px;
 }
 

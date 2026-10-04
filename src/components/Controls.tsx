@@ -85,6 +85,27 @@ export function Controls({
             Acordes
           </button>
         </div>
+        {isChords && (
+          <>
+            <span className="control-label">Tipo</span>
+            <div className="btn-row">
+              <button
+                type="button"
+                className={`chip ${quality === 'major' ? 'chip-active' : ''}`}
+                onClick={() => onQualityChange('major')}
+              >
+                Mayores
+              </button>
+              <button
+                type="button"
+                className={`chip ${quality === 'minor' ? 'chip-active' : ''}`}
+                onClick={() => onQualityChange('minor')}
+              >
+                Menores
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="control-group area-inst">

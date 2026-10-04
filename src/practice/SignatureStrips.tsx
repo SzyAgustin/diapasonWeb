@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import type { ChordQuality } from '../music/caged';
 import {
   FLAT_ORDER,
   majorScaleNames,
+  naturalMinorScaleNames,
   noteNameInSpanish,
   SHARP_ORDER,
   TRIAD_ROWS,
@@ -55,6 +57,7 @@ function Strip({
   notation,
   selected,
   onSelect,
+  scaleOf,
   startAt = 1,
   leadingBlank = false,
 }: {
@@ -64,10 +67,11 @@ function Strip({
   notation: Notation;
   selected?: string | null;
   onSelect?: (note: string) => void;
+  scaleOf?: (note: string) => string[];
   startAt?: number;
   leadingBlank?: boolean;
 }) {
-  const scale = selected ? majorScaleNames(selected) : [];
+  const scale = selected && scaleOf ? scaleOf(selected) : [];
   return (
     <div className={`strip-row strip-${tone}`}>
       <span className="control-label">{label}</span>
@@ -102,16 +106,23 @@ function Strip({
   );
 }
 
-export function SignatureStrips() {
+export function SignatureStrips({ quality }: { quality: ChordQuality }) {
   const [notation, setNotation] = useState<Notation>('spanish');
   const [sharpKey, setSharpKey] = useState<string | null>(null);
   const [flatKey, setFlatKey] = useState<string | null>(null);
-  const sharpMajors = TRIAD_ROWS.filter((row) => row.accidentals > 0).map(
-    (row) => row.major.notes[0].name,
-  );
-  const flatMajors = TRIAD_ROWS.filter((row) => row.accidentals < 0).map(
-    (row) => row.major.notes[0].name,
-  );
+  const [shown, setShown] = useState(quality);
+  if (shown !== quality) {
+    setShown(quality);
+    setSharpKey(null);
+    setFlatKey(null);
+  }
+  const minor = quality === 'minor';
+  const tonic = (row: (typeof TRIAD_ROWS)[number]) =>
+    (minor ? row.minor : row.major).notes[0].name;
+  const natural = TRIAD_ROWS.find((row) => row.accidentals === 0);
+  const sharpKeys = TRIAD_ROWS.filter((row) => row.accidentals > 0).map(tonic);
+  const flatKeys = TRIAD_ROWS.filter((row) => row.accidentals < 0).map(tonic);
+  const scaleOf = minor ? naturalMinorScaleNames : majorScaleNames;
 
   const pick = (current: string | null, note: string) => (current === note ? null : note);
 
@@ -133,22 +144,24 @@ export function SignatureStrips() {
         </button>
       </div>
       <Strip
-        label="Mayores con sostenidos"
-        notes={['C', ...sharpMajors]}
+        label={minor ? 'Menores con sostenidos' : 'Mayores con sostenidos'}
+        notes={[tonic(natural!), ...sharpKeys]}
         tone="sharp"
         notation={notation}
         startAt={0}
         selected={sharpKey}
+        scaleOf={scaleOf}
         onSelect={(note) => setSharpKey((current) => pick(current, note))}
       />
       <Strip label="Sostenidos" notes={SHARP_ORDER} tone="sharp" notation={notation} leadingBlank />
       <Strip
-        label="Mayores con bemoles"
-        notes={['C', ...flatMajors]}
+        label={minor ? 'Menores con bemoles' : 'Mayores con bemoles'}
+        notes={[tonic(natural!), ...flatKeys]}
         tone="flat"
         notation={notation}
         startAt={0}
         selected={flatKey}
+        scaleOf={scaleOf}
         onSelect={(note) => setFlatKey((current) => pick(current, note))}
       />
       <Strip label="Bemoles" notes={FLAT_ORDER} tone="flat" notation={notation} leadingBlank />

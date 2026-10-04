@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import type { ChordQuality } from '../music/caged';
 import { noteNameInSpanish, type Triad } from '../music/triads';
-import { allPracticeTriads, reshuffleAvoiding, shuffleTriads } from './deck';
+import { practiceTriads, reshuffleAvoiding, shuffleTriads } from './deck';
 
 function promptName(triad: Triad): string {
   const root = noteNameInSpanish(triad.notes[0].name);
@@ -9,11 +10,12 @@ function promptName(triad: Triad): string {
 }
 
 interface TriadPracticeProps {
+  quality: ChordQuality;
   onShowAnswer: (label: string | null) => void;
 }
 
-export function TriadPractice({ onShowAnswer }: TriadPracticeProps) {
-  const [order, setOrder] = useState<Triad[]>(() => shuffleTriads(allPracticeTriads()));
+export function TriadPractice({ quality, onShowAnswer }: TriadPracticeProps) {
+  const [order, setOrder] = useState<Triad[]>(() => shuffleTriads(practiceTriads(quality)));
   const [index, setIndex] = useState(0);
   const triad = order[index];
 
@@ -23,7 +25,7 @@ export function TriadPractice({ onShowAnswer }: TriadPracticeProps) {
       setIndex(index + 1);
       return;
     }
-    setOrder(reshuffleAvoiding(triad));
+    setOrder(reshuffleAvoiding(triad, quality));
     setIndex(0);
   };
 
